@@ -1,0 +1,37 @@
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Composer (PHP 패키지 매니저)
+vendor/
+composer.lock
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE / Editor
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Logs and temp files
+*.log
+*.cache
+*.tmp
+*.swp
+
+# Uploads or storage (if user-generated)
+storage/
+uploads/
+public/uploads/
+tmp/
+
+# PHPUnit test results
+.phpunit.result.cache
+
+# Cache
+cache/
+bootstrap/cache/
