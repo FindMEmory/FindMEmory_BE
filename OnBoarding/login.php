@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/db_connect.php';
+require_once __DIR__ . '/../db_connect.php';
 
 $login_id = $_POST['login_id'];
 $login_pwd = $_POST['login_pwd'];
@@ -11,7 +11,7 @@ $result = mysqli_query($conn, $sql);
 
 $login_result = 0;
 while ($row = mysqli_fetch_array($result)) {
-    $login_result = 1;
+    $login_result = $row['user_id'];
 }
 
 echo $login_result;
