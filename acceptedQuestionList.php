@@ -25,9 +25,10 @@ $sql = "
 
 $result = mysqli_query($conn, $sql);
 $rows = [];
-
 while ($row = mysqli_fetch_assoc($result)) {
-    $rows[] = $row;
+    $rows[] = array_map(function($v) {
+        return is_numeric($v) ? (int)$v : $v;
+    }, $row);
 }
 
 echo json_encode([
