@@ -1,21 +1,41 @@
 <?php
 require_once __DIR__ . '/db_connect.php';
 
-// GET 또는 POST 둘 중 하나에서 값 받아오기
 $keyword_id = $_REQUEST['keyword_id'] ?? null;
-$sender_id  = $_REQUEST['sender_id'] ?? null;
+$user_id    = $_REQUEST['sender_id'] ?? null;
 $body       = $_REQUEST['body'] ?? null;
 
-// 값이 없으면 오류 처리
-if ($keyword_id === null || $sender_id === null || $body === null) {
-    echo "PARAM_ERROR";
+if (!$keyword_id || !$user_id || !$body) {
+    echo 0;
     exit;
 }
 
-$sql = "INSERT INTO keyword_chats (keyword_id, sender_id, body)
-        VALUES ('$keyword_id', '$sender_id', '$body')";
 
-$result = mysqli_query($conn, $sql);
+$conn->query("
+    INSERT INTO keyword_chats (keyword_id, sender_id, body)
+    VALUES ($keyword_id, $user_id, '$body')
+");
 
-echo $result ? 1 : 0;
-?>
+
+$check = $conn->query("
+    SELECT 1 FROM keyword_participants
+    WHERE keyword_id = $keyword_id AND user_id = $user_id
+    LIMIT 1
+");
+
+
+if ($check->num_rows === 0) {
+    $conn->query("
+        INSERT INTO keyword_participants (keyword_id, user_id)
+        VALUES ($keyword_id, $user_id)
+    ");
+
+    $conn->query("
+        UPDATE keywords
+        SET participant_count = participant_count + 1
+        WHERE keyword_id = $keyword_id
+    ");
+}
+
+$conn->close();
+echo 1;

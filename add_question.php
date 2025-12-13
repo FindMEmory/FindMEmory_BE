@@ -18,10 +18,20 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param("ssis", $title, $body, $author_id, $keyword_id);
 
 if ($stmt->execute()) {
+
+    if ($keyword_id !== null) {
+        $conn->query("
+            UPDATE keywords
+            SET question_count = question_count + 1
+            WHERE keyword_id = $keyword_id
+        ");
+    }
+
     echo json_encode(["status" => "success", "message" => "질문 등록 성공"]);
 } else {
     echo json_encode(["status" => "error", "message" => $conn->error]);
 }
 
+$stmt->close();
 mysqli_close($conn);
 ?>

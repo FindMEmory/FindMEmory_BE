@@ -7,6 +7,11 @@ $isSolved = isset($_GET['isSolved']) ? $_GET['isSolved'] : 'all';
 
 $where = "WHERE 1 = 1";
 
+$keywordId = isset($_GET['keyword_id']) ? intval($_GET['keyword_id']) : 0;
+if ($keywordId > 0) {
+    $where .= " AND keyword_id = $keywordId";
+}
+
 if ($isSolved === 'true') {
     $where .= " AND is_solved = 1";
 } else if ($isSolved === 'false') {
