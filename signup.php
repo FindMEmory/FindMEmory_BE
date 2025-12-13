@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../db_connect.php';
+require_once __DIR__ . '/db_connect.php';
 
 $login_id  = $_POST['login_id'];
 $login_pwd = $_POST['login_pwd'];
