@@ -22,6 +22,7 @@ $q_sql = "
         u.nickname
     FROM questions q
     JOIN users u ON q.author_id = u.user_id
+    LEFT JOIN keywords k ON q.keyword_id = k.keyword_id
     WHERE q.question_id = ?
 ";
 

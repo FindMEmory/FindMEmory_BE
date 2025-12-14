@@ -4,7 +4,6 @@ require_once __DIR__ . '/db_connect.php';
 $question_id = $_POST['question_id'] ?? '';
 $title       = $_POST['title'] ?? '';
 $body        = $_POST['body'] ?? '';
-$keyword_id  = $_POST['keyword_id'] ?? null;
 
 // 필수값 체크
 if ($question_id === '' || $title === '' || $body === '') {
@@ -16,28 +15,46 @@ if ($question_id === '' || $title === '' || $body === '') {
 }
 
 /*
- * ✅ 수정에서는 question_count 절대 건드리지 않는다
- * (개수는 추가 / 삭제에서만 변경)
+ * ✅ 핵심 규칙
+ * 1. keyword_id가 POST에 없으면 → 키워드 유지
+ * 2. keyword_id가 '' 이면 → 키워드 제거
+ * 3. keyword_id가 숫자면 → 키워드 변경
  */
 
-if ($keyword_id === null || $keyword_id === '') {
-    // 키워드 제거
+if (array_key_exists('keyword_id', $_POST)) {
+
+    // 🔴 키워드 제거
+    if ($_POST['keyword_id'] === '') {
+        $sql = "
+            UPDATE questions
+            SET title = ?, body = ?, keyword_id = NULL, updated_at = NOW()
+            WHERE question_id = ?
+        ";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssi", $title, $body, $question_id);
+
+    } else {
+        // 🟢 키워드 변경
+        $keyword_id = (int)$_POST['keyword_id'];
+
+        $sql = "
+            UPDATE questions
+            SET title = ?, body = ?, keyword_id = ?, updated_at = NOW()
+            WHERE question_id = ?
+        ";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssii", $title, $body, $keyword_id, $question_id);
+    }
+
+} else {
+    // 🟡 키워드 유지 (POST에 아예 안 온 경우)
     $sql = "
         UPDATE questions
-        SET title = ?, body = ?, keyword_id = NULL, updated_at = NOW()
+        SET title = ?, body = ?, updated_at = NOW()
         WHERE question_id = ?
     ";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssi", $title, $body, $question_id);
-} else {
-    // 키워드 변경/유지
-    $sql = "
-        UPDATE questions
-        SET title = ?, body = ?, keyword_id = ?, updated_at = NOW()
-        WHERE question_id = ?
-    ";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssii", $title, $body, $keyword_id, $question_id);
 }
 
 $result = $stmt->execute();
