@@ -14,16 +14,9 @@ if ($question_id === '' || $title === '' || $body === '') {
     exit;
 }
 
-/*
- * ✅ 핵심 규칙
- * 1. keyword_id가 POST에 없으면 → 키워드 유지
- * 2. keyword_id가 '' 이면 → 키워드 제거
- * 3. keyword_id가 숫자면 → 키워드 변경
- */
-
 if (array_key_exists('keyword_id', $_POST)) {
 
-    // 🔴 키워드 제거
+    // 키워드 제거
     if ($_POST['keyword_id'] === '') {
         $sql = "
             UPDATE questions
@@ -34,7 +27,7 @@ if (array_key_exists('keyword_id', $_POST)) {
         $stmt->bind_param("ssi", $title, $body, $question_id);
 
     } else {
-        // 🟢 키워드 변경
+        // 키워드 변경
         $keyword_id = (int)$_POST['keyword_id'];
 
         $sql = "
@@ -47,7 +40,7 @@ if (array_key_exists('keyword_id', $_POST)) {
     }
 
 } else {
-    // 🟡 키워드 유지 (POST에 아예 안 온 경우)
+    // 키워드 유지 (POST에 아예 안 온 경우)
     $sql = "
         UPDATE questions
         SET title = ?, body = ?, updated_at = NOW()
